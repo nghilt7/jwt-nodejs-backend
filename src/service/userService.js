@@ -58,8 +58,37 @@ const deleteUser = async (id) => {
   }
 };
 
+const getUserById = async (id) => {
+  const connection = await createConnectDatabase();
+
+  try {
+    const [rows, fields] = await connection.execute(
+      "SELECT * FROM users WHERE id=?",
+      [id]
+    );
+    return rows;
+  } catch (error) {
+    console.log(">>> Error", error);
+  }
+};
+
+const updateUser = async (email, username, id) => {
+  const connection = await createConnectDatabase();
+
+  try {
+    await connection.execute(
+      "UPDATE users SET email=?, username=? WHERE id=?",
+      [email, username, id]
+    );
+  } catch (error) {
+    console.log(">>> Error", error);
+  }
+};
+
 module.exports = {
   createNewUser,
   getAllUser,
   deleteUser,
+  getUserById,
+  updateUser,
 };
