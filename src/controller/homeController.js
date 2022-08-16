@@ -5,17 +5,17 @@ const handleHelloWorld = (req, res) => {
   return res.render("home.ejs", { name });
 };
 
-const handleUserPage = (req, res) => {
-  return res.render("user.ejs");
+const handleUserPage = async (req, res) => {
+  const allUser = await userService.getAllUser();
+  return res.render("user.ejs", { allUser });
 };
 
-const handleCreateNewUser = (req, res) => {
+const handleCreateNewUser = async (req, res) => {
   const {
     body: { email, password, username },
   } = req;
 
-  // userService.createNewUser(email, password, username);
-  userService.getAllUser();
+  await userService.createNewUser(email, password, username);
 
   return res.send("Create ");
 };
