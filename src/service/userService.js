@@ -2,6 +2,8 @@ import bcrypt from "bcryptjs";
 import mysql from "mysql2/promise";
 import bluebird from "bluebird";
 
+import db from "../models/index";
+
 // salt password
 const salt = bcrypt.genSaltSync(10);
 
@@ -26,13 +28,25 @@ const createNewUser = async (email, password, username) => {
 
   const connection = await createConnectDatabase();
 
+  // WAY 1
+  // try {
+  //   await connection.execute(
+  //     "INSERT INTO user (email, password, username) VALUES (?, ?, ?)",
+  //     [email, hashPassword, username]
+  //   );
+  // } catch (error) {
+  //   console.log(">>> Error", error);
+  // }
+
+  // WAY 2 USE ORM
   try {
-    await connection.execute(
-      "INSERT INTO user (email, password, username) VALUES (?, ?, ?)",
-      [email, hashPassword, username]
-    );
+    await db.User.create({
+      username,
+      email,
+      password,
+    });
   } catch (error) {
-    console.log(">>> Error", error);
+    console.log(">>> Check Error", error);
   }
 };
 
