@@ -34,10 +34,7 @@ const getUpdateUserPage = async (req, res) => {
   } = req;
   let userData = {};
   const user = await userService.getUserById(id);
-  if (user && user.length > 0) {
-    userData = user[0];
-  }
-  console.log(userData);
+  userData = user;
   res.render("user-update.ejs", { user: userData });
 };
 

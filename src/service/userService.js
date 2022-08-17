@@ -24,9 +24,7 @@ const hashUserPassword = (password) => {
 };
 
 const createNewUser = async (email, password, username) => {
-  let hashPassword = hashUserPassword(password);
-
-  const connection = await createConnectDatabase();
+  // const connection = await createConnectDatabase();
 
   // WAY 1
   // try {
@@ -39,11 +37,13 @@ const createNewUser = async (email, password, username) => {
   // }
 
   // WAY 2 USE ORM
+  let hashPassword = hashUserPassword(password);
+
   try {
     await db.User.create({
       username,
       email,
-      password,
+      password: hashPassword,
     });
   } catch (error) {
     console.log(">>> Check Error", error);
@@ -51,53 +51,83 @@ const createNewUser = async (email, password, username) => {
 };
 
 const getAllUser = async () => {
-  // create the connection, specify bluebird as Promise
-  const connection = await createConnectDatabase();
+  // WAY 1
+  // const connection = await createConnectDatabase();
 
-  try {
-    const [rows, fields] = await connection.execute("SELECT * FROM user");
-    return rows;
-  } catch (error) {
-    console.log(">>> Error", error);
-  }
+  // try {
+  //   const [rows, fields] = await connection.execute("SELECT * FROM user");
+  //   return rows;
+  // } catch (error) {
+  //   console.log(">>> Error", error);
+  // }
+
+  // WAY 2 USE ORM
+
+  let users = [];
+  users = await db.User.findAll();
+  return users;
 };
 
 const deleteUser = async (id) => {
-  const connection = await createConnectDatabase();
+  // WAY 1
+  // const connection = await createConnectDatabase();
 
-  try {
-    await connection.execute("DELETE FROM user WHERE id=?", [id]);
-  } catch (error) {
-    console.log(">>> Error", error);
-  }
+  // try {
+  //   await connection.execute("DELETE FROM user WHERE id=?", [id]);
+  // } catch (error) {
+  //   console.log(">>> Error", error);
+  // }
+
+  // WAY 2 ORM
+  await db.User.destroy({
+    where: {
+      id,
+    },
+  });
 };
 
 const getUserById = async (id) => {
-  const connection = await createConnectDatabase();
+  // const connection = await createConnectDatabase();
 
-  try {
-    const [rows, fields] = await connection.execute(
-      "SELECT * FROM user WHERE id=?",
-      [id]
-    );
-    return rows;
-  } catch (error) {
-    console.log(">>> Error", error);
-  }
+  // try {
+  //   const [rows, fields] = await connection.execute(
+  //     "SELECT * FROM user WHERE id=?",
+  //     [id]
+  //   );
+  //   return rows;
+  // } catch (error) {
+  //   console.log(">>> Error", error);
+  // }
+
+  // WAY 2
+  let user = {};
+  user = await db.User.findOne({
+    where: { id },
+  });
+  return user;
 };
 
 const updateUser = async (email, username, id) => {
-  const connection = await createConnectDatabase();
+  // const connection = await createConnectDatabase();
+  // try {
+  //   await connection.execute("UPDATE user SET email=?, username=? WHERE id=?", [
+  //     email,
+  //     username,
+  //     id,
+  //   ]);
+  // } catch (error) {
+  //   console.log(">>> Error", error);
+  // }
 
-  try {
-    await connection.execute("UPDATE user SET email=?, username=? WHERE id=?", [
-      email,
-      username,
-      id,
-    ]);
-  } catch (error) {
-    console.log(">>> Error", error);
-  }
+  // WAY 2
+  await db.User.update(
+    { email, username },
+    {
+      where: {
+        id,
+      },
+    }
+  );
 };
 
 module.exports = {
